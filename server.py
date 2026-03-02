@@ -6,7 +6,7 @@ pending = {}
 
 CLIENT_ID = os.getenv("CLIENT_ID", "1478005449155674134")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET", "ABirG5lgEpO1DC8ncvU6sYUq_RCQr75f")
-REDIRECT_URI = "https://your-app-name.onrender.com/callback"
+REDIRECT_URI = "https://zland-oauth.onrender.com/callback"
 
 @app.route("/")
 def home():
