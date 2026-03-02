@@ -16,6 +16,9 @@ def home():
 def callback():
     code = request.args.get("code")
     state = request.args.get("state")
+    
+    print(f"[CALLBACK] code={code}, state={state}")
+    
     r = requests.post("https://discord.com/api/oauth2/token", data={
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
@@ -23,15 +26,26 @@ def callback():
         "code": code,
         "redirect_uri": REDIRECT_URI,
     })
+    
     data = r.json()
-    pending[state] = data.get("access_token", "")
+    print(f"[DISCORD RESPONSE] {data}")  # This will show the error!
+    
+    token = data.get("access_token", "")
+    if token:
+        pending[state] = token
+        print(f"[SUCCESS] Token stored for state={state}")
+    else:
+        print(f"[ERROR] No token received: {data}")
+    
     return "<html><body><h2>Login successful! You can close this tab.</h2></body></html>"
 
 @app.route("/poll")
 def poll():
     state = request.args.get("state")
+    print(f"[POLL] state={state}, pending keys={list(pending.keys())}")
     token = pending.pop(state, None)
     return jsonify({"token": token})
 
 if __name__ == "__main__":
-    app.run(port=8080)
+    port = int(os.getenv("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
