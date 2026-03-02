@@ -2,11 +2,15 @@ from flask import Flask, request, jsonify
 import requests, uuid, os
 
 app = Flask(__name__)
-pending = {}  # state -> token
+pending = {}
 
-CLIENT_ID = "1478005449155674134"
-CLIENT_SECRET = "ABirG5lgEpO1DC8ncvU6sYUq_RCQr75f"
-REDIRECT_URI = "https://yourserver.com/callback"
+CLIENT_ID = os.getenv("CLIENT_ID", "1478005449155674134")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET", "ABirG5lgEpO1DC8ncvU6sYUq_RCQr75f")
+REDIRECT_URI = "https://your-app-name.onrender.com/callback"
+
+@app.route("/")
+def home():
+    return "OAuth2 Server is Online"
 
 @app.route("/callback")
 def callback():
@@ -19,7 +23,8 @@ def callback():
         "code": code,
         "redirect_uri": REDIRECT_URI,
     })
-    pending[state] = r.json().get("access_token", "")
+    data = r.json()
+    pending[state] = data.get("access_token", "")
     return "<html><body><h2>Login successful! You can close this tab.</h2></body></html>"
 
 @app.route("/poll")
